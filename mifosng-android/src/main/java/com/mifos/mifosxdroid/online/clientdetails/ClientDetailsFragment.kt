@@ -158,6 +158,10 @@ class ClientDetailsFragment : MifosBaseFragment(), ClientDetailsMvpView{
     var rlClient: RelativeLayout? = null
 
     @JvmField
+    @BindView(R.id.address_client)
+    var tr_address_client: TableRow? = null
+
+    @JvmField
     @Inject
     var mClientDetailsPresenter: ClientDetailsPresenter? = null
     private lateinit var rootView: View
@@ -454,8 +458,25 @@ class ClientDetailsFragment : MifosBaseFragment(), ClientDetailsMvpView{
             if (TextUtils.isEmpty(client.accountNo)) rowAccount!!.visibility = View.GONE
             if (TextUtils.isEmpty(client.externalId)) rowExternal!!.visibility = View.GONE
             if (TextUtils.isEmpty(client.mobileNo)) rowMobileNo!!.visibility = View.GONE
+            else {
+                rowMobileNo!!.setOnClickListener {
+                    val intent = Intent(Intent.ACTION_DIAL).apply {
+                        data = Uri.parse("tel:${tvMobileNo!!.text}")
+                    }
+                    startActivity(intent)
+                }
+            }
             if (TextUtils.isEmpty(client.groupNames)) rowGroup!!.visibility = View.GONE
             if (TextUtils.isEmpty(address_client)) tv_clientAddress!!.visibility = View.GONE
+            else {
+                tr_address_client!!.setOnClickListener {
+                    val gmmIntentUri =
+                        Uri.parse("geo:0,0?q=${tv_clientAddress!!.text}")
+                    val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                    mapIntent.setPackage("com.google.android.apps.maps")
+                    startActivity(mapIntent)
+                }
+            }
             try {
                 val dateString = Utils.getStringOfDate(
                         client.activationDate)
