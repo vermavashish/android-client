@@ -12,6 +12,7 @@ import com.mifos.objects.accounts.loan.LoanRepaymentRequest;
 import com.mifos.objects.accounts.loan.LoanRepaymentResponse;
 import com.mifos.objects.accounts.loan.LoanWithAssociations;
 import com.mifos.objects.accounts.loan.Loans;
+import com.mifos.objects.accounts.loan.SendPaymentRequest;
 import com.mifos.objects.client.Charges;
 import com.mifos.objects.client.Page;
 import com.mifos.objects.organisation.LoanProducts;
@@ -59,6 +60,11 @@ public interface LoanService {
     Observable<LoanRepaymentResponse> submitPayment(
             @Path("loanId") int loanId,
             @Body LoanRepaymentRequest loanRepaymentRequest);
+
+
+    @POST(APIEndPoint.LOANS + "/sendPaymentLinkForEMI/")
+    Observable<String> sendPaymentLink(
+            @Body SendPaymentRequest sendPaymentRequest);
 
     @GET(APIEndPoint.LOANS + "/{loanId}?associations=repaymentSchedule")
     Observable<LoanWithAssociations> getLoanRepaymentSchedule(@Path("loanId") int loanId);

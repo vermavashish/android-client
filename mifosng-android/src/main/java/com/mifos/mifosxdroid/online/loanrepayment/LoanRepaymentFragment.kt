@@ -21,19 +21,20 @@ import butterknife.OnClick
 import com.google.gson.Gson
 import com.jakewharton.fliptables.FlipTable
 import com.mifos.mifosxdroid.R
+import com.mifos.mifosxdroid.adapters.LoanRepaymentScheduleAdapter
 import com.mifos.mifosxdroid.core.MaterialDialog
 import com.mifos.mifosxdroid.core.MifosBaseActivity
 import com.mifos.mifosxdroid.core.MifosBaseFragment
 import com.mifos.mifosxdroid.core.util.Toaster
 import com.mifos.mifosxdroid.uihelpers.MFDatePicker
 import com.mifos.mifosxdroid.uihelpers.MFDatePicker.OnDatePickListener
-import com.mifos.objects.accounts.loan.LoanRepaymentRequest
-import com.mifos.objects.accounts.loan.LoanRepaymentResponse
-import com.mifos.objects.accounts.loan.LoanWithAssociations
+import com.mifos.objects.accounts.loan.*
 import com.mifos.objects.templates.loans.LoanRepaymentTemplate
 import com.mifos.utils.Constants
 import com.mifos.utils.FragmentConstants
 import com.mifos.utils.Utils
+import org.apache.http.client.HttpClient
+import java.nio.file.attribute.AclEntry.newBuilder
 import javax.inject.Inject
 
 class LoanRepaymentFragment : MifosBaseFragment(), OnDatePickListener, LoanRepaymentMvpView, DialogInterface.OnClickListener {
@@ -91,6 +92,23 @@ class LoanRepaymentFragment : MifosBaseFragment(), OnDatePickListener, LoanRepay
     @BindView(R.id.bt_paynow)
     var bt_paynow: Button? = null
 
+
+    @kotlin.jvm.JvmField
+    @BindView(R.id.lv_repayment_schedule)
+    var lv_repaymentSchedule: ListView? = null
+
+    @kotlin.jvm.JvmField
+    @BindView(R.id.tv_total_paid)
+    var tv_totalPaid: TextView? = null
+
+    @kotlin.jvm.JvmField
+    @BindView(R.id.tv_total_upcoming)
+    var tv_totalUpcoming: TextView? = null
+
+    @kotlin.jvm.JvmField
+    @BindView(R.id.tv_total_overdue)
+    var tv_totalOverdue: TextView? = null
+
     @kotlin.jvm.JvmField
     @Inject
     var mLoanRepaymentPresenter: LoanRepaymentPresenter? = null
@@ -104,11 +122,13 @@ class LoanRepaymentFragment : MifosBaseFragment(), OnDatePickListener, LoanRepay
     private var amountInArrears: Double? = null
     private var paymentTypeOptionId = 0
     private var mfDatePicker: DialogFragment? = null
+    private var clientMobileNumber = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (activity as MifosBaseActivity?)!!.activityComponent.inject(this)
         if (arguments != null) {
-            val mLoanWithAssociations: LoanWithAssociations = arguments!!.getParcelable(Constants.LOAN_SUMMARY)
+            val mLoanWithAssociations: LoanWithAssociations = requireArguments().getParcelable(Constants.LOAN_SUMMARY)
+            clientMobileNumber = requireArguments().getString(Constants.CLIENT_MOBILE)
             if (mLoanWithAssociations != null) {
                 clientName = mLoanWithAssociations.clientName
                 loanAccountNumber = mLoanWithAssociations.accountNo
@@ -284,7 +304,8 @@ class LoanRepaymentFragment : MifosBaseFragment(), OnDatePickListener, LoanRepay
                     .setTitle(R.string.review_payment)
                     .setMessage(formReviewString)
                     .setPositiveButton(R.string.dialog_action_pay_now
-                    ) { dialog, which -> submitPayment() }
+//                    ) { dialog, which -> submitPayment() }
+                    ) { dialog, which -> getRepaymentData() }
                     .setNegativeButton(R.string.dialog_action_back
                     ) { dialog, which -> dialog.dismiss() }
                     .createMaterialDialog()
@@ -300,7 +321,7 @@ class LoanRepaymentFragment : MifosBaseFragment(), OnDatePickListener, LoanRepay
      */
     @OnClick(R.id.bt_cancelPayment)
     fun onCancelPaymentButtonClicked() {
-        activity!!.supportFragmentManager.popBackStackImmediate()
+        requireActivity().supportFragmentManager.popBackStackImmediate()
     }
 
     /**
@@ -319,6 +340,10 @@ class LoanRepaymentFragment : MifosBaseFragment(), OnDatePickListener, LoanRepay
         val builtRequest = Gson().toJson(request)
         Log.i("LOG_TAG", builtRequest)
         mLoanRepaymentPresenter!!.submitPayment(loanId!!.toInt(), request)
+    }
+
+    fun getRepaymentData() {
+        mLoanRepaymentPresenter!!.loadLoanRepaySchedule(loanId!!.toInt())
     }
 
     override fun showLoanRepayTemplate(loanRepaymentTemplate: LoanRepaymentTemplate?) {
@@ -355,11 +380,46 @@ class LoanRepaymentFragment : MifosBaseFragment(), OnDatePickListener, LoanRepay
             Toaster.show(rootView, "Payment Successful, Transaction ID = " +
                     loanRepaymentResponse.resourceId)
         }
-        activity!!.supportFragmentManager.popBackStackImmediate()
+        requireActivity()!!.supportFragmentManager.popBackStackImmediate()
     }
 
     override fun showError(errorMessage: Int) {
         Toaster.show(rootView, errorMessage)
+    }
+
+    override fun showLoanRepaySchedule(loanWithAssociations: LoanWithAssociations) {
+        /* Activity is null - Fragment has been detached; no need to do anything. */
+        Log.i("Repay Tag", loanWithAssociations.clientName)
+
+        val listOfActualPeriods = loanWithAssociations
+            .repaymentSchedule
+            .getlistOfActualPeriods()
+        val completedEmi = RepaymentSchedule
+            .getNumberOfRepaymentsComplete(listOfActualPeriods)
+
+        var sendPmtRqst = SendPaymentRequest()
+        sendPmtRqst.client_id = loanWithAssociations.clientId.toString()
+        sendPmtRqst.loan_id = loanWithAssociations.accountNo
+        sendPmtRqst.emi_number = (completedEmi + 1).toString()
+        sendPmtRqst.amount = calculateTotal()
+        sendPmtRqst.purpose_message = "Repayment Link for emi collection"
+        sendPmtRqst.client_name = loanWithAssociations.clientName
+        sendPmtRqst.mobile = clientMobileNumber
+        sendPmtRqst.due_date = "2021-12-01"
+        val builtRequest = Gson().toJson(sendPmtRqst)
+        Log.i("LOG_TAG", builtRequest)
+        mLoanRepaymentPresenter!!.sendPaymentLink(sendPmtRqst)
+    }
+
+    override fun showFetchingError(s: String?) {
+        Toaster.show(rootView, s)
+    }
+
+    override fun showPaymentSentSuccessfully(res: String?) {
+        if (res != null) {
+            Toaster.show(rootView, "Payment Link Sent Successfully")
+        }
+        requireActivity()!!.supportFragmentManager.popBackStackImmediate()
     }
 
     override fun showProgressbar(b: Boolean) {
@@ -380,11 +440,12 @@ class LoanRepaymentFragment : MifosBaseFragment(), OnDatePickListener, LoanRepay
     interface OnFragmentInteractionListener
     companion object {
         @kotlin.jvm.JvmStatic
-        fun newInstance(loanWithAssociations: LoanWithAssociations?): LoanRepaymentFragment {
+        fun newInstance(loanWithAssociations: LoanWithAssociations?, clientMobileNumber: String): LoanRepaymentFragment {
             val fragment = LoanRepaymentFragment()
             val args = Bundle()
             if (loanWithAssociations != null) {
                 args.putParcelable(Constants.LOAN_SUMMARY, loanWithAssociations)
+                args.putString(Constants.CLIENT_MOBILE, clientMobileNumber)
                 fragment.arguments = args
             }
             return fragment

@@ -57,6 +57,8 @@ public class Constants {
 
     public static final String CLIENTS = "clients";
 
+    public static final String CLIENT_MOBILE = "clientMobile";
+
     public static final String LOAN_ACCOUNT_NUMBER = "loanAccountNumber";
 
     public static final String LOAN_PAYMENT_TYPE_OPTIONS = "LoanPaymentTypeOptions";

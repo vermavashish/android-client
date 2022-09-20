@@ -48,6 +48,19 @@ public class RepaymentSchedule implements Parcelable {
         return count;
     }
 
+    //Helper Method to get due date of next emi
+    public static int getDueDateofNextEmi(List<Period> periodList) {
+
+        int count = 0;
+
+        for (Period period : periodList) {
+            if (period.getComplete())
+                count++;
+        }
+
+        return count;
+    }
+
     //Helper Method to get total pending/upcoming repayments
     public static int getNumberOfRepaymentsPending(List<Period> periodList) {
 

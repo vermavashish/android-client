@@ -159,7 +159,7 @@ class IndividualCollectionSheetDetailsFragment : MifosBaseFragment(), Individual
        // val fragment: PaymentDetailsFragment = PaymentDetailsFragment().newInstance(position, payload
        //         , paymentTypeOptionList, current, paymentTypeOptions, clientId)
        // fragment.setTargetFragment(this, requestCode)
-        val fragment: LoanAccountSummaryFragment = LoanAccountSummaryFragment.newInstance(current!!.loan.loanId, true)
+        val fragment: LoanAccountSummaryFragment = LoanAccountSummaryFragment.newInstance(current!!.loan.loanId, "", true)
         fragment.setTargetFragment(this, requestCode)
 
          (context as MifosBaseActivity?)!!.replaceFragment(fragment, true, R.id.container)

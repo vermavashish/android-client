@@ -17,8 +17,8 @@
 <!--    </item>-->
 
     <item
-        android:width="250dp"
-        android:height="75dp"
-        android:drawable="@drawable/mifos_logo"
+        android:width="400dp"
+        android:height="300dp"
+        android:drawable="@drawable/mifos_logo_3"
         android:gravity="center" />
 </layer-list>

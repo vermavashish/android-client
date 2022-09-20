@@ -57,8 +57,10 @@ class GenerateCollectionSheetActivity : MifosBaseActivity(), OnPayloadSelectedLi
      * It will display the Loan Repayment Fragment where
      * the Information of the repayment has to be filled in.
      */
-    override fun makeRepayment(loan: LoanWithAssociations?) {
-        replaceFragment(LoanRepaymentFragment.newInstance(loan), true, R.id.container)
+
+
+    override fun makeRepayment(loan: LoanWithAssociations?, clientMobileNumber: String) {
+        replaceFragment(LoanRepaymentFragment.newInstance(loan, clientMobileNumber), true, R.id.container)
     }
 
     /**

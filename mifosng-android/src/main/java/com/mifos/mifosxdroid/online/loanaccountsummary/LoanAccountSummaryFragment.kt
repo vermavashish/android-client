@@ -143,6 +143,7 @@ class LoanAccountSummaryFragment : ProgressableFragment(), LoanAccountSummaryMvp
     var mLoanAccountSummaryPresenter: LoanAccountSummaryPresenter? = null
     var chargesList: MutableList<Charges> = ArrayList()
     private lateinit var rootView: View
+    private var clientMobileNumber = ""
 
     // Action Identifier in the onProcessTransactionClicked Method
     private var processLoanTransactionAction = -1
@@ -152,8 +153,9 @@ class LoanAccountSummaryFragment : ProgressableFragment(), LoanAccountSummaryMvp
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            loanAccountNumber = arguments!!.getInt(Constants.LOAN_ACCOUNT_NUMBER)
-            parentFragment = arguments!!.getBoolean(Constants.IS_A_PARENT_FRAGMENT)
+            loanAccountNumber = requireArguments()!!.getInt(Constants.LOAN_ACCOUNT_NUMBER)
+            parentFragment = requireArguments()!!.getBoolean(Constants.IS_A_PARENT_FRAGMENT)
+            clientMobileNumber = requireArguments()!!.getString(Constants.CLIENT_MOBILE)
         }
         //Necessary Call to add and update the Menu in a Fragment
         setHasOptionsMenu(true)
@@ -181,7 +183,7 @@ class LoanAccountSummaryFragment : ProgressableFragment(), LoanAccountSummaryMvp
     @OnClick(R.id.bt_processLoanTransaction)
     fun onProcessTransactionClicked() {
         if (processLoanTransactionAction == TRANSACTION_REPAYMENT) {
-            mListener!!.makeRepayment(clientLoanWithAssociations)
+            mListener!!.makeRepayment(clientLoanWithAssociations, clientMobileNumber)
         } else if (processLoanTransactionAction == ACTION_APPROVE_LOAN) {
             approveLoan()
         } else if (processLoanTransactionAction == ACTION_DISBURSE_LOAN) {
@@ -398,7 +400,7 @@ class LoanAccountSummaryFragment : ProgressableFragment(), LoanAccountSummaryMvp
     }
 
     interface OnFragmentInteractionListener {
-        fun makeRepayment(loan: LoanWithAssociations?)
+        fun makeRepayment(loan: LoanWithAssociations?, clientMobileNumber: String)
         fun loadRepaymentSchedule(loanId: Int)
         fun loadLoanTransactions(loanId: Int)
     }
@@ -420,12 +422,13 @@ class LoanAccountSummaryFragment : ProgressableFragment(), LoanAccountSummaryMvp
         private const val ACTION_DISBURSE_LOAN = 1
         private const val TRANSACTION_REPAYMENT = 2
         @kotlin.jvm.JvmStatic
-        fun newInstance(loanAccountNumber: Int,
+        fun newInstance(loanAccountNumber: Int, clientMobileNumber : String,
                         parentFragment: Boolean): LoanAccountSummaryFragment {
             val fragment = LoanAccountSummaryFragment()
             val args = Bundle()
             args.putInt(Constants.LOAN_ACCOUNT_NUMBER, loanAccountNumber)
             args.putBoolean(Constants.IS_A_PARENT_FRAGMENT, parentFragment)
+            args.putString(Constants.CLIENT_MOBILE, clientMobileNumber)
             fragment.arguments = args
             return fragment
         }

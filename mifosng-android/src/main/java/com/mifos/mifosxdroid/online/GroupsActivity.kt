@@ -38,7 +38,7 @@ class GroupsActivity : MifosBaseActivity(), GroupDetailsFragment.OnFragmentInter
      * It displays the summary of the Selected Loan Account
      */
     override fun loadLoanAccountSummary(loanAccountNumber: Int) {
-        replaceFragment(LoanAccountSummaryFragment.newInstance(loanAccountNumber, true), true,
+        replaceFragment(LoanAccountSummaryFragment.newInstance(loanAccountNumber, "", true), true,
                 R.id.container)
     }
 
@@ -62,8 +62,12 @@ class GroupsActivity : MifosBaseActivity(), GroupDetailsFragment.OnFragmentInter
      * It will display the Loan Repayment Fragment where
      * the Information of the repayment has to be filled in.
      */
-    override fun makeRepayment(loan: LoanWithAssociations?) {
-        replaceFragment(LoanRepaymentFragment.newInstance(loan), true, R.id.container)
+//    override fun makeRepayment(loan: LoanWithAssociations?) {
+//        replaceFragment(LoanRepaymentFragment.newInstance(loan), true, R.id.container)
+//    }
+
+    override fun makeRepayment(loan: LoanWithAssociations?, clientMobileNumber: String) {
+        replaceFragment(LoanRepaymentFragment.newInstance(loan, clientMobileNumber), true, R.id.container)
     }
 
     /**

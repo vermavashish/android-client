@@ -33,7 +33,7 @@ class PassCodeActivity : MifosPassCodeActivity() {
         finish()
     }
     override fun getLogo(): Int {
-        return R.drawable.mifos_logo
+        return R.drawable.mifos_logo_2
     }
     override fun getEncryptionType(): Int {
         return EncryptionUtil.FINERACT_CN

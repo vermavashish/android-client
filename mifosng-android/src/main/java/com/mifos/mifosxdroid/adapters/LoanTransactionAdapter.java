@@ -108,15 +108,15 @@ public class LoanTransactionAdapter extends BaseExpandableListAdapter {
         }
         MaterialIcons contractedIconValue = MaterialIcons.md_add_circle_outline;
         MaterialIcons expandedIconValue = MaterialIcons.md_remove_circle_outline;
-        if (!isExpanded) {
-            reusableParentViewHolder.tv_arrow.setText(String.valueOf(contractedIconValue
-                    .character()));
-        } else {
-            reusableParentViewHolder.tv_arrow.setText(String.valueOf(expandedIconValue.character
-                    ()));
-        }
-
-        Iconify.addIcons(reusableParentViewHolder.tv_arrow);
+//        if (!isExpanded) {
+//            reusableParentViewHolder.tv_arrow.setText(String.valueOf(contractedIconValue
+//                    .character()));
+//        } else {
+//            reusableParentViewHolder.tv_arrow.setText(String.valueOf(expandedIconValue.character
+//                    ()));
+//        }
+//
+//        Iconify.addIcons(reusableParentViewHolder.tv_arrow);
         reusableParentViewHolder.tv_transactionDate.setText(DateHelper.getDateAsString(parents
                 .get(i).getDate()));
 
@@ -164,8 +164,8 @@ public class LoanTransactionAdapter extends BaseExpandableListAdapter {
 
     public static class ReusableParentViewHolder {
 
-        @BindView(R.id.tv_arrow)
-        TextView tv_arrow;
+//        @BindView(R.id.tv_arrow)
+//        TextView tv_arrow;
         @BindView(R.id.tv_transaction_date)
         TextView tv_transactionDate;
         @BindView(R.id.tv_transaction_type)

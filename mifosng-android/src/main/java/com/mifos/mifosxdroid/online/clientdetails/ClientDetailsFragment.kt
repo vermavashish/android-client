@@ -158,6 +158,10 @@ class ClientDetailsFragment : MifosBaseFragment(), ClientDetailsMvpView{
     var rlClient: RelativeLayout? = null
 
     @JvmField
+    @BindView(R.id.address_client)
+    var tr_address_client: TableRow? = null
+
+    @JvmField
     @Inject
     var mClientDetailsPresenter: ClientDetailsPresenter? = null
     private lateinit var rootView: View
@@ -166,11 +170,12 @@ class ClientDetailsFragment : MifosBaseFragment(), ClientDetailsMvpView{
             "/client_image.png")
     private var accountAccordion: AccountAccordion? = null
     private var isClientActive = false
+    private  var clientMobileNumber = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (activity as MifosBaseActivity?)!!.activityComponent.inject(this)
         if (arguments != null) {
-            clientId = arguments!!.getInt(Constants.CLIENT_ID)
+            clientId = requireArguments()!!.getInt(Constants.CLIENT_ID)
         }
         setHasOptionsMenu(true)
         checkPermissions()
@@ -191,7 +196,7 @@ class ClientDetailsFragment : MifosBaseFragment(), ClientDetailsMvpView{
 
     fun inflateClientInformation() {
         mClientDetailsPresenter!!.loadClientDetailsAndClientAccounts(clientId)
-        mClientDetailsPresenter!!.loadDataTableInfo("KYC", clientId)
+        mClientDetailsPresenter!!.loadDataTableInfo("Aadhar Details", clientId)
 //        val mBaseApiManager: BaseApiManager? = null
 //        val mDatabaseHelperDataTable: DatabaseHelperDataTable? = null
 //
@@ -441,7 +446,7 @@ class ClientDetailsFragment : MifosBaseFragment(), ClientDetailsMvpView{
         if (client != null) {
             setToolbarTitle(getString(R.string.client) + " - " + client.displayName)
             isClientActive = client.isActive
-            activity!!.invalidateOptionsMenu()
+            requireActivity()!!.invalidateOptionsMenu()
             if (!client.isActive) {
                 llBottomPanel!!.visibility = View.VISIBLE
             }
@@ -450,12 +455,30 @@ class ClientDetailsFragment : MifosBaseFragment(), ClientDetailsMvpView{
             tvGroup!!.text = client.groupNames
             tv_externalId!!.text = client.externalId
             tvMobileNo!!.text = client.mobileNo
+            clientMobileNumber = client.mobileNo
             tv_clientAddress!!.text = address_client
             if (TextUtils.isEmpty(client.accountNo)) rowAccount!!.visibility = View.GONE
             if (TextUtils.isEmpty(client.externalId)) rowExternal!!.visibility = View.GONE
             if (TextUtils.isEmpty(client.mobileNo)) rowMobileNo!!.visibility = View.GONE
+            else {
+                rowMobileNo!!.setOnClickListener {
+                    val intent = Intent(Intent.ACTION_DIAL).apply {
+                        data = Uri.parse("tel:${tvMobileNo!!.text}")
+                    }
+                    startActivity(intent)
+                }
+            }
             if (TextUtils.isEmpty(client.groupNames)) rowGroup!!.visibility = View.GONE
             if (TextUtils.isEmpty(address_client)) tv_clientAddress!!.visibility = View.GONE
+            else {
+                tr_address_client!!.setOnClickListener {
+                    val gmmIntentUri =
+                        Uri.parse("geo:0,0?q=${tv_clientAddress!!.text}")
+                    val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                    mapIntent.setPackage("com.google.android.apps.maps")
+                    startActivity(mapIntent)
+                }
+            }
             try {
                 val dateString = Utils.getStringOfDate(
                         client.activationDate)
@@ -503,7 +526,7 @@ class ClientDetailsFragment : MifosBaseFragment(), ClientDetailsMvpView{
         val dataObj = jsonElements?.get(0)
         val jsonObject = dataObj?.asJsonObject
         val body = JSONObject(jsonObject.toString())
-        val addressObj = body.optString("Address")
+        val addressObj = body.optString("current_address")
         address_client = addressObj
     }
 
@@ -533,7 +556,7 @@ class ClientDetailsFragment : MifosBaseFragment(), ClientDetailsMvpView{
 
     override fun showClientImageDeletedSuccessfully() {
         Toaster.show(rootView, "Image deleted")
-        iv_clientImage!!.setImageDrawable(ContextCompat.getDrawable(activity!!, R.drawable.ic_launcher))
+        iv_clientImage!!.setImageDrawable(ContextCompat.getDrawable(requireActivity()!!, R.drawable.ic_launcher))
     }
 
     override fun showClientAccount(clientAccounts: ClientAccounts) {
@@ -546,7 +569,7 @@ class ClientDetailsFragment : MifosBaseFragment(), ClientDetailsMvpView{
             val section = AccountAccordion.Section.LOANS
             val adapter = LoanAccountsListAdapter(requireActivity().applicationContext,
                     clientAccounts.loanAccounts)
-            section.connect(activity, adapter, AdapterView.OnItemClickListener { adapterView, view, i, l -> mListener!!.loadLoanAccountSummary(adapter.getItem(i).id) })
+            section.connect(activity, adapter, AdapterView.OnItemClickListener { adapterView, view, i, l -> mListener!!.loadLoanAccountSummary(adapter.getItem(i).id, clientMobileNumber) })
         }
         if (clientAccounts.nonRecurringSavingsAccounts.size > 0) {
             val section = AccountAccordion.Section.SAVINGS
@@ -559,7 +582,7 @@ class ClientDetailsFragment : MifosBaseFragment(), ClientDetailsMvpView{
         }
         if (clientAccounts.recurringSavingsAccounts.size > 0) {
             val section = AccountAccordion.Section.RECURRING
-            val adapter = SavingsAccountsListAdapter(activity!!.applicationContext,
+            val adapter = SavingsAccountsListAdapter(requireActivity()!!.applicationContext,
                     clientAccounts.recurringSavingsAccounts)
             section.connect(activity, adapter, AdapterView.OnItemClickListener { adapterView, view, i, l ->
                 mListener!!.loadSavingsAccountSummary(adapter.getItem(i).id,
@@ -593,7 +616,7 @@ class ClientDetailsFragment : MifosBaseFragment(), ClientDetailsMvpView{
     }
 
     interface OnFragmentInteractionListener {
-        fun loadLoanAccountSummary(loanAccountNumber: Int)
+        fun loadLoanAccountSummary(loanAccountNumber: Int, clientMobileNumber: String)
         fun loadSavingsAccountSummary(savingsAccountNumber: Int, accountType: DepositType?)
     }
 

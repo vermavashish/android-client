@@ -12,8 +12,8 @@
     <color name="light_blue">#FF87DBF9</color>
     <color name="light_red">#fff9393c</color>
     <color name="light_grey">#ffd1d1d1</color>
-    <color name="transaction_detail_bg">#8ad3da44</color>
-    <color name="transaction_detail_table_header_bg">#8ada6134</color>
+    <color name="transaction_detail_bg">#F0FBFF</color>
+    <color name="transaction_detail_table_header_bg">#5191f4</color>
     <color name="blue">#ff003fff</color>
     <color name="red">#FF0000</color>
 
@@ -69,15 +69,27 @@
 <!--    <color name="summer_sky">#29B6F6</color>-->
 <!--    <color name="foreground">#ffffffff</color>-->
 
-    <color name="primary">#50b748</color>
-    <color name="primary_dark">#50b748</color>
-    <color name="primary_light">#50b748</color>
-    <color name="accent">#50b748</color>
+<!--    <color name="primary">#50b748</color>-->
+<!--    <color name="primary_dark">#50b748</color>-->
+<!--    <color name="primary_light">#50b748</color>-->
+<!--    <color name="accent">#50b748</color>-->
+<!--    <color name="primary_text">#212121</color>-->
+<!--    <color name="secondary_text">#727272</color>-->
+<!--    <color name="icons">#FFFFFF</color>-->
+<!--    <color name="divider">#B6B6B6</color>-->
+<!--&lt;!&ndash;    <color name="summer_sky">#29B6F6</color>&ndash;&gt;-->
+<!--    <color name="summer_sky">#ffffffff</color>-->
+<!--    <color name="foreground">#ffffffff</color>-->
+
+    <color name="primary">#5191f4</color>
+    <color name="primary_dark">#5191f4</color>
+    <color name="primary_light">#5191f4</color>
+    <color name="accent">#5191f4</color>
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
-<!--    <color name="summer_sky">#29B6F6</color>-->
+    <!--    <color name="summer_sky">#29B6F6</color>-->
     <color name="summer_sky">#ffffffff</color>
     <color name="foreground">#ffffffff</color>
 

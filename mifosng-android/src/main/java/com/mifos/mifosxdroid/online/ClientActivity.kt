@@ -43,7 +43,7 @@ class ClientActivity : MifosBaseActivity(), ClientDetailsFragment.OnFragmentInte
         if (clientId != 0) {
             replaceFragment(ClientDetailsFragment.Companion.newInstance(clientId), false, R.id.container)
         } else if (loanAccountNumber != 0) {
-            replaceFragment(LoanAccountSummaryFragment.newInstance(loanAccountNumber, false), true,
+            replaceFragment(LoanAccountSummaryFragment.newInstance(loanAccountNumber, "", false), true,
                     R.id.container)
         } else if (savingsAccountNumber != 0) {
             replaceFragment(SavingsAccountSummaryFragment.newInstance(savingsAccountNumber,
@@ -56,8 +56,12 @@ class ClientActivity : MifosBaseActivity(), ClientDetailsFragment.OnFragmentInte
      * from the list of Loan Accounts on Client Details Fragment
      * It displays the summary of the Selected Loan Account
      */
-    override fun loadLoanAccountSummary(loanAccountNumber: Int) {
-        replaceFragment(LoanAccountSummaryFragment.newInstance(loanAccountNumber, true), true, R.id.container)
+//    override fun loadLoanAccountSummary(loanAccountNumber: Int) {
+//        replaceFragment(LoanAccountSummaryFragment.newInstance(loanAccountNumber, true), true, R.id.container)
+//    }
+
+    override fun loadLoanAccountSummary(loanAccountNumber: Int, clientMobileNumber: String) {
+        replaceFragment(LoanAccountSummaryFragment.newInstance(loanAccountNumber, clientMobileNumber, true), true, R.id.container)
     }
 
     /**
@@ -80,8 +84,12 @@ class ClientActivity : MifosBaseActivity(), ClientDetailsFragment.OnFragmentInte
      * It will display the Loan Repayment Fragment where
      * the Information of the repayment has to be filled in.
      */
-    override fun makeRepayment(loan: LoanWithAssociations?) {
-        replaceFragment(LoanRepaymentFragment.newInstance(loan), true, R.id.container)
+//    override fun makeRepayment(loan: LoanWithAssociations?) {
+//        replaceFragment(LoanRepaymentFragment.newInstance(loan), true, R.id.container)
+//    }
+
+    override fun makeRepayment(loan: LoanWithAssociations?, clientMobileNumber: String) {
+        replaceFragment(LoanRepaymentFragment.newInstance(loan, clientMobileNumber), true, R.id.container)
     }
 
     /**

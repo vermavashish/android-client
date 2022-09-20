@@ -9,6 +9,7 @@ import com.mifos.objects.accounts.loan.LoanRepaymentRequest;
 import com.mifos.objects.accounts.loan.LoanRepaymentResponse;
 import com.mifos.objects.accounts.loan.LoanWithAssociations;
 import com.mifos.objects.accounts.loan.Loans;
+import com.mifos.objects.accounts.loan.SendPaymentRequest;
 import com.mifos.objects.organisation.LoanProducts;
 import com.mifos.objects.templates.loans.LoanRepaymentTemplate;
 import com.mifos.objects.templates.loans.LoanTemplate;
@@ -201,6 +202,29 @@ public class DataManagerLoan {
 
             default:
                 return Observable.just(new LoanRepaymentResponse());
+        }
+    }
+
+
+    public Observable<String> sendPaymentLink(final SendPaymentRequest request) {
+        switch (PrefManager.getUserStatus()) {
+            case 0:
+                return mBaseApiManager.getLoanApi().sendPaymentLink(request)
+                        .concatMap(new Func1<String, Observable<String>>() {
+                            @Override
+                            public Observable<String> call
+                                    (String sendPaymentResponse) {
+                                return Observable.just(sendPaymentResponse);
+                            }
+                        });
+            case 1:
+                /**
+                 * Return LoanRepaymentResponse from DatabaseHelperLoan.
+                 */
+                return null;
+
+            default:
+                return null;
         }
     }
 

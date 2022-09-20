@@ -111,7 +111,8 @@
                     <TextView
                         android:id="@+id/tv_mobile_no"
                         style="@style/TextView.Row.Value"
-                        tools:text="1234567890"/>
+                        tools:text="1234567890"
+                        android:textColor="#50b748"/>
                 </TableRow>
 
                 <TableRow

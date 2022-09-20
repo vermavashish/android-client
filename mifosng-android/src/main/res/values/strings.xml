@@ -629,7 +629,7 @@
     <string name="dialog_action_cancel">Cancel</string>
     <string name="dialog_action_go_online">Go Online</string>
     <string name="dialog_error_title">Sorry</string>
-    <string name="dialog_action_pay_now">Pay Now</string>
+    <string name="dialog_action_pay_now">Send Now</string>
     <string name="dialog_action_back">Back</string>
     <string name="dialog_action_i_am_sure">I\'M Sure</string>
     <string name="dialog_action_re_try">Re-Try</string>
@@ -848,9 +848,7 @@
     <string name="about_app">Field Officer Application is an application
         developed for the Bank staff field officer to keep track of Clients,
         Centers, Groups, Loan Account, Savings Account, etc.</string>
-    <string name="about_mifos">Developed by <a href="https://mifos.org/">Mifos</a>
-        <a href="https://github.com/openMF/android-client/graphs/contributors">contributors</a>.
-    </string>
+    <string name="about_mifos">Developed by Kugelblitz</string>
     <string name="about_us_connect">Connect With Us</string>
     <string name="link">Visit Us</string>
     <string name="about_support_github_sub">Fork the repo and push changes or submit new issues.</string>
